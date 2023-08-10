@@ -8,6 +8,7 @@ import connectDB from "./config/db.js";
 dotenv.config();
 const port= 8000;
 import userRoutes from './routes/userRoutes.js';
+import adminRoutes from './routes/adminRoute.js'
 
 const app= express();
 app.use(cookieParser()); // Place cookieParser here
@@ -20,6 +21,8 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 app.use('/api/users',userRoutes)
+
+app.use('/api/admin',adminRoutes)
 
 app.get('/',(req,res)=>res.send('server ready'))
 
