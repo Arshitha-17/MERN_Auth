@@ -17,7 +17,7 @@ import React from 'react'
         const [email,setEmail] = useState('');
         const [password,setPassword] = useState('');
         const [confirmPassword,setConfirmPassword] = useState('');
-        const [images,setImage] = useState([]);
+        const [images,setImage] = useState('');
 
         const navigate = useNavigate();
         const dispatch = useDispatch();
@@ -45,12 +45,14 @@ import React from 'react'
                 formData.append('email', email);
                 formData.append('password', password);
           
-                // Check if an image is selected before appending
+              
                 if (images) {
                   formData.append('file', images);
+                  
                 }
+                console.log(formData);
           
-                const res = await register(formData).unwrap(); // Pass the formData directly
+                const res = await register(formData).unwrap(); 
                 dispatch(setCredentials({ ...res }));
                 navigate('/');
               } catch (err) {

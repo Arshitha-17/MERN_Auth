@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors"
 import dotenv from 'dotenv';
 import {notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import cookieParser from 'cookie-parser';
@@ -10,6 +11,8 @@ import userRoutes from './routes/userRoutes.js';
 
 const app= express();
 app.use(cookieParser()); // Place cookieParser here
+
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 connectDB();
 

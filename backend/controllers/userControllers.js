@@ -13,7 +13,8 @@ const authUser= asyncHandler(async(req,res)=>{
             _id:user._id,
             name:user.name,
             email: user.email,
-            password:user.password
+            password:user.password,
+            images: user.images
         })
     }else{
         res.status(400)
