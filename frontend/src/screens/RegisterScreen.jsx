@@ -17,6 +17,7 @@ import React from 'react'
         const [email,setEmail] = useState('');
         const [password,setPassword] = useState('');
         const [confirmPassword,setConfirmPassword] = useState('');
+        const [images,setImage] = useState([]);
 
         const navigate = useNavigate();
         const dispatch = useDispatch();
@@ -32,24 +33,36 @@ import React from 'react'
           },[navigate,userInfo]);
         
 
-        const submitHandler= async(e)=>{
-        e.preventDefault();
-        if(password!==confirmPassword){
-            toast.error('Password do not match')
-        }else{
-            try {
-                const res = await register({name,email,password}).unwrap();
-                dispatch(setCredentials({...res}))
-                navigate('/')
-            } catch (err) {
+          const submitHandler = async (e) => {
+            e.preventDefault();
+          
+            if (password !== confirmPassword) {
+              toast.error('Password do not match');
+            } else {
+              try {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('password', password);
+          
+                // Check if an image is selected before appending
+                if (images) {
+                  formData.append('file', images);
+                }
+          
+                const res = await register(formData).unwrap(); // Pass the formData directly
+                dispatch(setCredentials({ ...res }));
+                navigate('/');
+              } catch (err) {
                 toast.error(err?.data?.message || err.error);
+              }
             }
-        }
-    }
+          };
+          
     return (
         <FormContainer>
             <h1>Sign Up</h1>
-            <Form onClick={submitHandler}>
+            <Form onSubmit={submitHandler}>
             <Form.Group className="my-2" controlId='name'>
                     <Form.Label>Name</Form.Label>
                     <Form.Control
@@ -89,6 +102,12 @@ import React from 'react'
                     onChange={(e) =>{setConfirmPassword(e.target.value)}}
                     ></Form.Control>
                 </Form.Group>
+                <Form.Label>Profile Picture</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
+           
+            ></Form.Control>
                 {isLoading && <Loader/>}
                 <Button  type="submit" varient='primary' className="mt-3">
                     Sign Up

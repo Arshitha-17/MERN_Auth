@@ -16,7 +16,8 @@ import React from 'react'
         const [email,setEmail] = useState('');
         const [password,setPassword] = useState('');
         const [confirmPassword,setConfirmPassword] = useState('');
-
+        const [images, setImage] = useState([])
+        
         const navigate = useNavigate();
         const dispatch = useDispatch();
 
@@ -36,12 +37,15 @@ import React from 'react'
             toast.error('Password do not match')
         }else{
            try {
-            const res= updateProfile({
-                _id: userInfo._id,
-                name,
-                email,
-                password
-            }).unwrap();
+            const formData = new FormData();
+            formData.append('_id', userInfo._id);
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('file', images);
+    
+            const res = await updateProfile(formData).unwrap();
+    
             dispatch(setCredentials({...res}));
             toast.success('Profile Updated')
            } catch (err) {
@@ -92,6 +96,14 @@ import React from 'react'
                     onChange={(e) =>{setConfirmPassword(e.target.value)}}
                     ></Form.Control>
                 </Form.Group>
+                 <Form.Group className="my-2" controlId="image">
+            <Form.Label>Profile Picture</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
+           
+            ></Form.Control>
+          </Form.Group>
 
                 {isLoading && <Loader/>}
 

@@ -23,33 +23,38 @@ const authUser= asyncHandler(async(req,res)=>{
 
 // register a new user 
 // route:  POST/api/users
-
-const registerUser= asyncHandler(async(req,res)=>{
-
-    const {name,email,password}= req.body
-    const userExists= await  User.findOne({email})
-    if(userExists){
-        res.status(404)
-        throw new Error('User already exist')
+const registerUser = asyncHandler(async (req, res) => {
+    const { name, email, password } = req.body;
+    const images = req.file;  // Get 'images' from req.body
+  
+    const userExists = await User.findOne({ email });
+  
+    if (userExists) {
+      res.status(404);
+      throw new Error('User already exists');
     }
-    const  user= await User.create({
+    const user = await User.create({
         name,
         email,
-        password
-    });
-    if(user){
-        generateToken(res,user._id)
-        res.status(201).json({
-            _id:user._id,
-            name:user.name,
-            email: user.email,
-            password:user.password
-        })
-    }else{
-        res.status(400)
-        throw new Error('Invalid user data')
+        password,
+        images: images ? images.filename : '', // Set to empty string if no image provided
+      });
+  
+    if (user) {
+      generateToken(res, user._id);
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        images: user.images ? user.images : null, // Set to null if no image provided
+      });
+    } else {
+      res.status(400);
+      throw new Error('Invalid user data');
     }
-});
+  });
+  
 
 // logout user
 // route: 
@@ -85,6 +90,10 @@ const updateUserProfile= asyncHandler(async(req,res)=>{
         user.name= req.body.name || user.name;
         user.email= req.body.email || user.email;
 
+        if(req.file){
+            user.images = req.file.filename || user.images;
+           }
+
         if(req.body.password){
             user.password = req.body.password
         }
@@ -92,7 +101,8 @@ const updateUserProfile= asyncHandler(async(req,res)=>{
         res.status(200).json({
             _id: updatedUser._id,
             name: updatedUser.name,
-            email: updatedUser.email
+            email: updatedUser.email,
+            images: updatedUser.images 
         });
     }else{
         res.status(404)
